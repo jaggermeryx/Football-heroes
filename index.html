@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FootballHeroes - Live Football Scoring</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .tagline {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            flex: 1;
+            min-width: 150px;
+            padding: 15px;
+            background: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .tab:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+        }
+
+        .tab.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .match-setup {
+            display: grid;
+            gap: 20px;
+        }
+
+        .team-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .team-section h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-bottom: 10px;
+            transition: border 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            background: #667eea;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(102, 126, 234, 0.3);
+        }
+
+        .scoreboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .team-score {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .team-name {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        .score {
+            font-size: 3em;
+            font-weight: bold;
+        }
+
+        .scoring-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .action-btn {
+            padding: 20px;
+            font-size: 18px;
+            background: #4CAF50;
+        }
+
+        .action-btn.yellow {
+            background: #FFC107;
+        }
+
+        .action-btn.red {
+            background: #f44336;
+        }
+
+        .match-timeline {
+            max-height: 400px;
+            overflow-y: auto;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .timeline-event {
+            background: white;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .timeline-event.goal {
+            border-left-color: #4CAF50;
+        }
+
+        .timeline-event.yellow {
+            border-left-color: #FFC107;
+        }
+
+        .timeline-event.red {
+            border-left-color: #f44336;
+        }
+
+        .player-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .player-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .player-card h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .modal-content h3 {
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .close-modal {
+            background: #f44336;
+            margin-top: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .scoreboard {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>⚽ FootballHeroes</h1>
+            <p class="tagline">Live Football Scoring & Match Management</p>
+        </header>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('setup')">Match Setup</button>
+            <button class="tab" onclick="switchTab('live')">Live Match</button>
+            <button class="tab" onclick="switchTab('stats')">Statistics</button>
+            <button class="tab" onclick="switchTab('players')">Players</button>
+        </div>
+
+        <div class="content">
+            <!-- Match Setup Tab -->
+            <div id="setup" class="tab-content active">
+                <h2 style="margin-bottom: 20px; color: #667eea;">Create New Match</h2>
+                <div class="match-setup">
+                    <div class="team-section">
+                        <h3>Home Team</h3>
+                        <input type="text" id="homeTeam" placeholder="Home Team Name">
+                        <input type="text" id="homePlayers" placeholder="Add players (comma separated)">
+                    </div>
+                    <div class="team-section">
+                        <h3>Away Team</h3>
+                        <input type="text" id="awayTeam" placeholder="Away Team Name">
+                        <input type="text" id="awayPlayers" placeholder="Add players (comma separated)">
+                    </div>
+                    <div class="team-section">
+                        <h3>Match Details</h3>
+                        <input type="text" id="matchVenue" placeholder="Venue">
+                        <input type="date" id="matchDate">
+                        <select id="matchDuration">
+                            <option value="90">90 Minutes (Full Match)</option>
+                            <option value="45">45 Minutes (Half Match)</option>
+                            <option value="30">30 Minutes (Short Match)</option>
+                        </select>
+                    </div>
+                    <button onclick="startMatch()" style="width: 100%; padding: 15px; font-size: 18px;">Start Match</button>
+                </div>
+            </div>
+
+            <!-- Live Match Tab -->
+            <div id="live" class="tab-content">
+                <div class="scoreboard">
+                    <div class="team-score">
+                        <div class="team-name" id="liveHomeTeam">Home Team</div>
+                        <div class="score" id="homeScore">0</div>
+                    </div>
+                    <div class="team-score">
+                        <div class="team-name" id="liveAwayTeam">Away Team</div>
+                        <div class="score" id="awayScore">0</div>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin: 20px 0;">
+                    <h3 style="color: #667eea;">Match Time: <span id="matchTime">0:00</span></h3>
+                </div>
+
+                <div class="scoring-actions">
+                    <button class="action-btn" onclick="showGoalModal('home')">🥅 Home Goal</button>
+                    <button class="action-btn" onclick="showGoalModal('away')">🥅 Away Goal</button>
+                    <button class="action-btn yellow" onclick="showCardModal('yellow')">🟨 Yellow Card</button>
+                    <button class="action-btn red" onclick="showCardModal('red')">🟥 Red Card</button>
+                    <button class="action-btn" style="background: #2196F3;" onclick="addSubstitution()">🔄 Substitution</button>
+                    <button class="action-btn" style="background: #9C27B0;" onclick="toggleTimer()">⏯️ Start/Pause</button>
+                </div>
+
+                <h3 style="color: #667eea; margin: 20px 0;">Match Timeline</h3>
+                <div class="match-timeline" id="timeline">
+                    <p style="text-align: center; color: #999;">No events yet. Start scoring!</p>
+                </div>
+            </div>
+
+            <!-- Statistics Tab -->
+            <div id="stats" class="tab-content">
+                <h2 style="margin-bottom: 20px; color: #667eea;">Match Statistics</h2>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div class="team-section">
+                        <h3 id="statsHomeTeam">Home Team</h3>
+                        <div class="stat-row"><span>Goals:</span><span id="statsHomeGoals">0</span></div>
+                        <div class="stat-row"><span>Shots:</span><span id="statsHomeShots">0</span></div>
+                        <div class="stat-row"><span>Yellow Cards:</span><span id="statsHomeYellow">0</span></div>
+                        <div class="stat-row"><span>Red Cards:</span><span id="statsHomeRed">0</span></div>
+                    </div>
+                    <div class="team-section">
+                        <h3 id="statsAwayTeam">Away Team</h3>
+                        <div class="stat-row"><span>Goals:</span><span id="statsAwayGoals">0</span></div>
+                        <div class="stat-row"><span>Shots:</span><span id="statsAwayShots">0</span></div>
+                        <div class="stat-row"><span>Yellow Cards:</span><span id="statsAwayYellow">0</span></div>
+                        <div class="stat-row"><span>Red Cards:</span><span id="statsAwayRed">0</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Players Tab -->
+            <div id="players" class="tab-content">
+                <h2 style="margin-bottom: 20px; color: #667eea;">Player Profiles</h2>
+                <div id="playersList" class="player-list">
+                    <p style="text-align: center; color: #999; grid-column: 1/-1;">No players added yet. Set up a match first!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Goal Modal -->
+    <div id="goalModal" class="modal">
+        <div class="modal-content">
+            <h3>Record Goal</h3>
+            <select id="goalScorer">
+                <option value="">Select Player</option>
+            </select>
+            <select id="assistPlayer">
+                <option value="">Assist (Optional)</option>
+            </select>
+            <button onclick="recordGoal()">Record Goal</button>
+            <button class="close-modal" onclick="closeModal('goalModal')">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Card Modal -->
+    <div id="cardModal" class="modal">
+        <div class="modal-content">
+            <h3 id="cardModalTitle">Record Card</h3>
+            <select id="cardTeam">
+                <option value="home">Home Team</option>
+                <option value="away">Away Team</option>
+            </select>
+            <select id="cardPlayer">
+                <option value="">Select Player</option>
+            </select>
+            <input type="text" id="cardReason" placeholder="Reason (optional)">
+            <button onclick="recordCard()">Record Card</button>
+            <button class="close-modal" onclick="closeModal('cardModal')">Cancel</button>
+        </div>
+    </div>
+
+    <script>
+        let match = {
+            homeTeam: '',
+            awayTeam: '',
+            homeScore: 0,
+            awayScore: 0,
+            homePlayers: [],
+            awayPlayers: [],
+            events: [],
+            stats: {
+                home: { goals: 0, shots: 0, yellow: 0, red: 0 },
+                away: { goals: 0, shots: 0, yellow: 0, red: 0 }
+            },
+            time: 0,
+            timerRunning: false
+        };
+
+        let timerInterval;
+        let currentGoalTeam = '';
+        let currentCardType = '';
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+        }
+
+        function startMatch() {
+            const homeTeam = document.getElementById('homeTeam').value || 'Home Team';
+            const awayTeam = document.getElementById('awayTeam').value || 'Away Team';
+            const homePlayers = document.getElementById('homePlayers').value.split(',').map(p => p.trim()).filter(p => p);
+            const awayPlayers = document.getElementById('awayPlayers').value.split(',').map(p => p.trim()).filter(p => p);
+
+            match.homeTeam = homeTeam;
+            match.awayTeam = awayTeam;
+            match.homePlayers = homePlayers.map(name => ({ name, goals: 0, assists: 0, yellow: 0, red: 0 }));
+            match.awayPlayers = awayPlayers.map(name => ({ name, goals: 0, assists: 0, yellow: 0, red: 0 }));
+
+            document.getElementById('liveHomeTeam').textContent = homeTeam;
+            document.getElementById('liveAwayTeam').textContent = awayTeam;
+            document.getElementById('statsHomeTeam').textContent = homeTeam;
+            document.getElementById('statsAwayTeam').textContent = awayTeam;
+
+            updatePlayers();
+            switchTab('live');
+            document.querySelectorAll('.tab')[1].classList.add('active');
+            alert('Match started! Good luck! ⚽');
+        }
+
+        function showGoalModal(team) {
+            currentGoalTeam = team;
+            const select = document.getElementById('goalScorer');
+            const assistSelect = document.getElementById('assistPlayer');
+            select.innerHTML = '<option value="">Select Player</option>';
+            assistSelect.innerHTML = '<option value="">Assist (Optional)</option>';
+            
+            const players = team === 'home' ? match.homePlayers : match.awayPlayers;
+            players.forEach((p, i) => {
+                select.innerHTML += `<option value="${i}">${p.name}</option>`;
+                assistSelect.innerHTML += `<option value="${i}">${p.name}</option>`;
+            });
+            
+            document.getElementById('goalModal').classList.add('show');
+        }
+
+        function recordGoal() {
+            const scorerIdx = document.getElementById('goalScorer').value;
+            const assistIdx = document.getElementById('assistPlayer').value;
+            
+            if (scorerIdx === '') {
+                alert('Please select a player');
+                return;
+            }
+
+            const players = currentGoalTeam === 'home' ? match.homePlayers : match.awayPlayers;
+            const scorer = players[scorerIdx];
+            scorer.goals++;
+
+            if (assistIdx !== '') {
+                players[assistIdx].assists++;
+            }
+
+            if (currentGoalTeam === 'home') {
+                match.homeScore++;
+                match.stats.home.goals++;
+                document.getElementById('homeScore').textContent = match.homeScore;
+            } else {
+                match.awayScore++;
+                match.stats.away.goals++;
+                document.getElementById('awayScore').textContent = match.awayScore;
+            }
+
+            const event = {
+                type: 'goal',
+                team: currentGoalTeam,
+                player: scorer.name,
+                assist: assistIdx !== '' ? players[assistIdx].name : null,
+                time: Math.floor(match.time / 60)
+            };
+            match.events.unshift(event);
+
+            updateTimeline();
+            updateStats();
+            updatePlayers();
+            closeModal('goalModal');
+        }
+
+        function showCardModal(type) {
+            currentCardType = type;
+            document.getElementById('cardModalTitle').textContent = `Record ${type === 'yellow' ? 'Yellow' : 'Red'} Card`;
+            document.getElementById('cardModal').classList.add('show');
+            updateCardPlayerList();
+        }
+
+        function updateCardPlayerList() {
+            const team = document.getElementById('cardTeam').value;
+            const select = document.getElementById('cardPlayer');
+            select.innerHTML = '<option value="">Select Player</option>';
+            
+            const players = team === 'home' ? match.homePlayers : match.awayPlayers;
+            players.forEach((p, i) => {
+                select.innerHTML += `<option value="${i}">${p.name}</option>`;
+            });
+        }
+
+        function recordCard() {
+            const team = document.getElementById('cardTeam').value;
+            const playerIdx = document.getElementById('cardPlayer').value;
+            const reason = document.getElementById('cardReason').value;
+            
+            if (playerIdx === '') {
+                alert('Please select a player');
+                return;
+            }
+
+            const players = team === 'home' ? match.homePlayers : match.awayPlayers;
+            const player = players[playerIdx];
+            
+            if (currentCardType === 'yellow') {
+                player.yellow++;
+                match.stats[team].yellow++;
+            } else {
+                player.red++;
+                match.stats[team].red++;
+            }
+
+            const event = {
+                type: currentCardType,
+                team: team,
+                player: player.name,
+                reason: reason,
+                time: Math.floor(match.time / 60)
+            };
+            match.events.unshift(event);
+
+            updateTimeline();
+            updateStats();
+            updatePlayers();
+            closeModal('cardModal');
+        }
+
+        function addSubstitution() {
+            const event = {
+                type: 'substitution',
+                time: Math.floor(match.time / 60)
+            };
+            match.events.unshift(event);
+            updateTimeline();
+        }
+
+        function toggleTimer() {
+            match.timerRunning = !match.timerRunning;
+            
+            if (match.timerRunning) {
+                timerInterval = setInterval(() => {
+                    match.time++;
+                    const mins = Math.floor(match.time / 60);
+                    const secs = match.time % 60;
+                    document.getElementById('matchTime').textContent = 
+                        `${mins}:${secs.toString().padStart(2, '0')}`;
+                }, 1000);
+            } else {
+                clearInterval(timerInterval);
+            }
+        }
+
+        function updateTimeline() {
+            const timeline = document.getElementById('timeline');
+            if (match.events.length === 0) {
+                timeline.innerHTML = '<p style="text-align: center; color: #999;">No events yet. Start scoring!</p>';
+                return;
+            }
+
+            timeline.innerHTML = match.events.map(e => {
+                let icon = '';
+                let text = '';
+                let className = '';
+                
+                switch(e.type) {
+                    case 'goal':
+                        icon = '⚽';
+                        className = 'goal';
+                        text = `${e.player} scored${e.assist ? ` (Assist: ${e.assist})` : ''}`;
+                        break;
+                    case 'yellow':
+                        icon = '🟨';
+                        className = 'yellow';
+                        text = `${e.player} - Yellow Card${e.reason ? `: ${e.reason}` : ''}`;
+                        break;
+                    case 'red':
+                        icon = '🟥';
+                        className = 'red';
+                        text = `${e.player} - Red Card${e.reason ? `: ${e.reason}` : ''}`;
+                        break;
+                    case 'substitution':
+                        icon = '🔄';
+                        text = 'Substitution';
+                        break;
+                }
+                
+                return `
+                    <div class="timeline-event ${className}">
+                        <span>${icon} ${text}</span>
+                        <span style="font-weight: bold;">${e.time}'</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updateStats() {
+            document.getElementById('statsHomeGoals').textContent = match.stats.home.goals;
+            document.getElementById('statsHomeShots').textContent = match.stats.home.shots;
+            document.getElementById('statsHomeYellow').textContent = match.stats.home.yellow;
+            document.getElementById('statsHomeRed').textContent = match.stats.home.red;
+            
+            document.getElementById('statsAwayGoals').textContent = match.stats.away.goals;
+            document.getElementById('statsAwayShots').textContent = match.stats.away.shots;
+            document.getElementById('statsAwayYellow').textContent = match.stats.away.yellow;
+            document.getElementById('statsAwayRed').textContent = match.stats.away.red;
+        }
+
+        function updatePlayers() {
+            const playersList = document.getElementById('playersList');
+            const allPlayers = [
+                ...match.homePlayers.map(p => ({...p, team: match.homeTeam})),
+                ...match.awayPlayers.map(p => ({...p, team: match.awayTeam}))
+            ];
+
+            if (allPlayers.length === 0) {
+                playersList.innerHTML = '<p style="text-align: center; color: #999; grid-column: 1/-1;">No players added yet. Set up a match first!</p>';
+                return;
+            }
+
+            playersList.innerHTML = allPlayers.map(p => `
+                <div class="player-card">
+                    <h4>${p.name}</h4>
+                    <p style="color: #999; margin-bottom: 10px;">${p.team}</p>
+                    <div class="stat-row"><span>⚽ Goals:</span><span>${p.goals}</span></div>
+                    <div class="stat-row"><span>🎯 Assists:</span><span>${p.assists}</span></div>
+                    <div class="stat-row"><span>🟨 Yellow:</span><span>${p.yellow}</span></div>
+                    <div class="stat-row"><span>🟥 Red:</span><span>${p.red}</span></div>
+                </div>
+            `).join('');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('show');
+        }
+
+        document.getElementById('cardTeam').addEventListener('change', updateCardPlayerList);
+    </script>
+</body>
+</html>
